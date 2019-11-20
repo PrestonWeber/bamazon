@@ -26,7 +26,8 @@ function runTable(){
                 {   
                     id: res[i].id,
                     Product: res[i].product_name,
-                    Price: res[i].price
+                    Price: res[i].price,
+                    Quantity: res[i].stock_quantity
             }
             ]);
             
@@ -45,7 +46,7 @@ function buyProduct() {
         {
             type: "number",
             message: "What is the ID of the product you would like to buy",
-            name: "id-input"
+            name: "idInput"
         },
         {
             type: "number",
@@ -61,25 +62,63 @@ function buyProduct() {
 
 
 function checkProduct(response) {
-    connection.query("SELECT * FROM products", function(err, res) {
+    connection.query(`SELECT stock_quantity FROM products WHERE id = ${parseInt(response.idInput)}`, function(err, res) {
         if (err) throw err;
-        for(i=0; i < res.length; i++) {
-            if (response.quantity > res[i].stock_quantity){
-                console.log("not enough quantity");
-            }
-            else{
+        
+        if(response.quantity > res[0].stock_quantity) {
+            console.log("Not enough quantity");
+        }else{
             subtractProduct(response);
-            }
         }
+
+        
     });
 }
 
 function subtractProduct (response) {
-    connection.query("UPDATE products SET stock_quantity = stock_quantity - " 
-    + response.quantity + "WHERE productsID = " 
-    + response.id-input, function (err, res) {
+    connection.query(`UPDATE products
+    SET stock_quantity = stock_quantity + ${response.quantity}
+    WHERE id = ${parseInt(response.idInput)}`, function (err, res) {
         if (err) throw err;
-        runTable();
+       
+        giveTotal(response);
     });
 }
+
+function giveTotal(response) {
+    connection.query(`SELECT price FROM products WHERE id = ${parseInt(response.idInput)}`, function(err, res) {
+        if (err) throw err;
+
+        var total = response.quantity * res[0].price;
+
+        console.log("Your total is $" + total);
+        
+        connection.end();        
+
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
