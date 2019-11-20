@@ -77,7 +77,7 @@ function checkProduct(response) {
 
 function subtractProduct (response) {
     connection.query(`UPDATE products
-    SET stock_quantity = stock_quantity + ${response.quantity}
+    SET stock_quantity = stock_quantity - ${response.quantity}
     WHERE id = ${parseInt(response.idInput)}`, function (err, res) {
         if (err) throw err;
        
