@@ -67,6 +67,7 @@ function checkProduct(response) {
         
         if(response.quantity > res[0].stock_quantity) {
             console.log("Not enough quantity");
+            buyProduct();
         }else{
             subtractProduct(response);
         }
